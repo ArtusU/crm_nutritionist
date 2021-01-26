@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+ <a href='{% url 'leads:lead-list' %}'>Go bact to leads</a>
+    <hr />
+        <h1>Create new lead.</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Submit</button>
+        </form>
+        <script src="" async defer></script>
+{% endblock content %}
+
+   
+
