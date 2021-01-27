@@ -12,11 +12,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body>
-    {% include "navbar.html" %}
-        {% block content %}
-        
-        {% endblock content %}
-        
+        {% include "navbar.html" %}
+        <div class="max-w-7xl mx-auto">
+            {% block content %}{% endblock content %}
+        </div>
         {% include "scripts.html" %}
     </body>
 </html>
