@@ -90,3 +90,7 @@ USE_TZ = True
 AUTH_USER_MODEL = 'leads.User'
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static'
+]
+STATIC_ROOT = 'static_root'
