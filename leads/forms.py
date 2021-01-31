@@ -39,7 +39,7 @@ class AssignNutritionistForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         request = kwargs.pop("request")
-        nutritionist = Nutritionist.objects.filter(organisation=request.user.userprofile)
+        nutritionist = Nutritionist.objects.filter(organization=request.user.organization)
         super(AssignNutritionistForm, self).__init__(*args, *kwargs)
         self.fields["nutritionist"].queryset = nutritionist
 

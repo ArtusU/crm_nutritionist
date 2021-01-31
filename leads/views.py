@@ -26,17 +26,17 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
     def get_queryset(self):
         user = self.request.user
         if user.is_organiser:
-            queryset = Lead.objects.filter(organization=user.userprofile,  nutritionist__isnull=False)
+            queryset = Lead.objects.filter(nutritionist__organization=user.nutritionist.organization,  nutritionist__isnull=False)
         else:
-            queryset = Lead.objects.filter(organization=user.nutritionist.organization,  nutritionist__isnull=False)
-            queryset = queryset.filter(nutritionist__user=user)
+            queryset = Lead.objects.filter(nutritionist=user.nutritionist, nutritionist__isnull=False)
+            #queryset = queryset.filter(nutritionist__user=user)
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super(LeadListView, self).get_context_data(**kwargs)
         user = self.request.user
         if user.is_organiser:
-            queryset = Lead.objects.filter(organization=user.userprofile, nutritionist__isnull=True)
+            queryset = Lead.objects.filter(nutritionist__isnull=True)
 
             context.update({
                 "unassigned_leads": queryset
@@ -49,11 +49,13 @@ class LeadDetailView(LoginRequiredMixin, generic.DetailView):
 
     def get_queryset(self):
         user = self.request.user
+        # initial queryset of leads for the entire organisation
         if user.is_organiser:
-            queryset = Lead.objects.filter(organization=user.userprofile)
+            queryset = Lead.objects.filter(nutritionist__organization=user.organization)
         else:
-            queryset = Lead.objects.filter(organization=user.nutritionist.organization)
-            queryset = queryset.filter(nutritionist__user=user)
+            queryset = Lead.objects.filter(nutritionist=user.nutritionist)
+            # filter for the agent that is logged in
+            #queryset = queryset.filter(nutritionist__user=user)
         return queryset
 
 class LeadCreateView(generic.CreateView):
@@ -65,7 +67,7 @@ class LeadCreateView(generic.CreateView):
 
     def form_valid(self, form):
         lead = form.save(commit=False)
-        lead.organisation = self.request.user.userprofile
+        lead.organization = self.request.user.organization
         lead.save()
         send_mail(
             subject="The Participant has been created.", 
@@ -81,7 +83,7 @@ class LeadUpdateView(generic.UpdateView):
 
     def get_queryset(self):
         user = self.request.user
-        return Lead.objects.filter(organization=user.userprofile)
+        return Lead.objects.filter(nutritionist=user.nutritionist)
 
     def get_success_url(self):
         return reverse("leads:lead-list")
@@ -94,7 +96,7 @@ class LeadDeleteView(LoginRequiredMixin, generic.DeleteView):
 
     def get_queryset(self):
         user = self.request.user
-        return Lead.objects.filter(organization=user.userprofile)
+        return Lead.objects.filter(organization=user.organization)
 
 
 class AssignNutritionistView(generic.FormView):
@@ -129,11 +131,11 @@ class CategoryListView(generic.ListView):
 
         if user.is_organiser:
             queryset = Lead.objects.filter(
-                organization=user.userprofile
+                organization=user.organization
             )
         else:
             queryset = Lead.objects.filter(
-                organization=user.agent.organization
+                organization=user.nutritionist.organization
             )
 
         context.update({
@@ -146,11 +148,11 @@ class CategoryListView(generic.ListView):
         # initial queryset of leads for the entire organization
         if user.is_organiser:
             queryset = Category.objects.filter(
-                organization=user.userprofile
+                organization=user.organization
             )
         else:
             queryset = Category.objects.filter(
-                organization=user.agent.organization
+                organization=user.nutritionist.organization
             )
         return queryset
 
@@ -164,7 +166,7 @@ class CategoryDetailView(LoginRequiredMixin, generic.DetailView):
         # initial queryset of leads for the entire organization
         if user.is_organiser:
             queryset = Category.objects.filter(
-                organization=user.userprofile
+                organization=user.organization
             )
         else:
             queryset = Category.objects.filter(
@@ -181,11 +183,11 @@ class LeadCategoryUpdateView(generic.UpdateView):
         user = self.request.user
         # initial queryset of leads for the entire organization
         if user.is_organiser:
-            queryset = Lead.objects.filter(organization=user.userprofile)
+            queryset = Lead.objects.filter(nutritionist__organization=user.organization)
         else:
-            queryset = Lead.objects.filter(organization=user.agent.organization)
+            queryset = Lead.objects.filter(nutritionist=user.nutritionist)
             # filter for the agent that is logged in
-            queryset = queryset.filter(agent__user=user)
+            #queryset = queryset.filter(nutritionist__user=user)
         return queryset
 
     def get_success_url(self):
