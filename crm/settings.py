@@ -1,15 +1,32 @@
 from pathlib import Path
 from decouple import config
+'''
+import environ
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+env = environ.Env(
+    DEBUG=(bool, False)
+)
+
+READ_DOT_ENV_FILE = env.bool('READ_DOT_ENV_FILE', default=False)
+if READ_DOT_ENV_FILE:
+    environ.Env.read_env()
+
+DEBUG = env('DEBUG')
+SECRET_KEY = env('SECRET_KEY')
+
+        #in terminal:
+        export READ_DOT_ENV_FILE
+        (will be stored in the session)
+
+'''
 
 
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 
+BASE_DIR = Path(__file__).resolve().parent.parent
 ALLOWED_HOSTS = []
-
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -63,6 +80,19 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+'''
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': env("DB_NAME"),
+        'USER': env("DB_USER"),
+        'PASSWORD': env("DB_PASSWORD"),
+        'HOST': env("DB_HOST"),
+        'PORT': env("DB_PORT"),
+    }
+}
+'''
 
 
 AUTH_PASSWORD_VALIDATORS = [
