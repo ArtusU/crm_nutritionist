@@ -26,8 +26,8 @@ class NutritionistCreateView(generic.CreateView):
 
     def form_valid(self, form):
         user = form.save(commit=False) 
-        user.is_nutritionist = True
         user.is_organiser = False
+        user.is_nutritionist = True
         user.set_password(f"{random.randint(0, 100000)}")
         user.save()  
         Nutritionist.objects.create(
@@ -36,7 +36,7 @@ class NutritionistCreateView(generic.CreateView):
         )
         send_mail(
             subject="You are invited to be a Nutritionist",
-            message="You were added as a nutritionist on ECF Participants. Please login to start working.",
+            message="You were added as a nutritionist on ECF Participants Service. Please go to the service and use your email to reset default password and set up new one. After that please log in with your username [user.username] and new password.",
             from_email="admin@test.com",
             recipient_list=[user.email]
         )

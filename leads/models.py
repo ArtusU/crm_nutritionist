@@ -9,14 +9,14 @@ class User(AbstractUser):
 
 
 class Organization(models.Model):
-    user            = models.OneToOneField(User, on_delete=models.CASCADE)
+    user            = models.OneToOneField(User, related_name="organization", on_delete=models.CASCADE)
 
     def __str__(self):
         return self.user.username
 
 class Nutritionist(models.Model):
     user            = models.OneToOneField(User, on_delete=models.CASCADE)
-    organization    = models.ForeignKey(Organization, related_name="organizations", blank=True, null=True, on_delete=models.CASCADE)
+    organization    = models.ForeignKey(Organization, blank=True, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return  f"{self.user.username} {self.organization}"
@@ -47,7 +47,7 @@ class Category(models.Model):
 def post_user_created_signal(sender, instance, created, **kwargs):
     if created:
         Organization.objects.create(user=instance)
-        Nutritionist.objects.create(user=instance)
+        #Nutritionist.objects.create(user=instance)
 
 post_save.connect(post_user_created_signal, sender=User)
 

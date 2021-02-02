@@ -26,9 +26,9 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
     def get_queryset(self):
         user = self.request.user
         if user.is_organiser:
-            queryset = Lead.objects.filter(nutritionist__organization=user.nutritionist.organization,  nutritionist__isnull=False)
+            queryset = Lead.objects.filter(organization=user.organization,  nutritionist__isnull=False)
         else:
-            queryset = Lead.objects.filter(nutritionist=user.nutritionist, nutritionist__isnull=False)
+            queryset = Lead.objects.filter(organization=user.nutritionist.organization, nutritionist__isnull=False)
             queryset = queryset.filter(nutritionist__user=user)  #logged in nutritioninst
         return queryset
 
@@ -36,7 +36,7 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
         context = super(LeadListView, self).get_context_data(**kwargs)
         user = self.request.user
         if user.is_organiser:
-            queryset = Lead.objects.filter(nutritionist__isnull=True)
+            queryset = Lead.objects.filter(organization=user.organization, nutritionist__isnull=True)
 
             context.update({
                 "unassigned_leads": queryset
@@ -46,16 +46,14 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
 class LeadDetailView(LoginRequiredMixin, generic.DetailView):
     template_name = "leads/lead_detail.html"
     context_object_name = "lead"
-
+    
     def get_queryset(self):
         user = self.request.user
-        # initial queryset of leads for the entire organisation
         if user.is_organiser:
-            queryset = Lead.objects.filter(nutritionist__organization=user.organization)
+            queryset = Lead.objects.filter(organization=user.organization,  nutritionist__isnull=False)
         else:
-            queryset = Lead.objects.filter(nutritionist=user.nutritionist)
-            # filter for the agent that is logged in
-            #queryset = queryset.filter(nutritionist__user=user)
+            queryset = Lead.objects.filter(organization=user.nutritionist.organization, nutritionist__isnull=False)
+            queryset = queryset.filter(nutritionist__user=user)  #logged in nutritioninst
         return queryset
 
 class LeadCreateView(generic.CreateView):
@@ -77,13 +75,15 @@ class LeadCreateView(generic.CreateView):
         )
         return super(LeadCreateView, self).form_valid(form)
 
+
+
 class LeadUpdateView(generic.UpdateView):
     template_name = "leads/lead_update.html"
     form_class = LeadModelForm
 
     def get_queryset(self):
         user = self.request.user
-        return Lead.objects.filter(nutritionist=user.nutritionist)
+        return Lead.objects.filter(organization=user.organization)
 
     def get_success_url(self):
         return reverse("leads:lead-list")
@@ -112,10 +112,12 @@ class LeadDeleteView(LoginRequiredMixin, generic.DeleteView):
         user = self.request.user
         return Lead.objects.filter(organization=user.organization)
 
+    
+
 
 class AssignNutritionistView(generic.FormView):
-    template_name = "nutritionists/assign_nutritionist.html"
-    class_form = AssignNutritionistForm
+    template_name = "leads/assign_nutritionist.html"
+    form_class = AssignNutritionistForm
 
     def get_form_kwargs(self, **kwargs):
         kwargs = super(AssignNutritionistView, self).get_form_kwargs(**kwargs)
@@ -132,7 +134,8 @@ class AssignNutritionistView(generic.FormView):
         lead = Lead.objects.get(id=self.kwargs["pk"])
         lead.nutritionist = nutritionist
         lead.save()
-        return super(AssignNutritionistView).form_valid(form)
+        return super(AssignNutritionistView, self).form_valid(form)
+        
 
 
 class CategoryListView(generic.ListView):

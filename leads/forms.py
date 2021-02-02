@@ -37,11 +37,13 @@ class CustomUserCreationForm(UserCreationForm):
 class AssignNutritionistForm(forms.Form):
     nutritionist = forms.ModelChoiceField(queryset=Nutritionist.objects.none())
 
+
     def __init__(self, *args, **kwargs):
         request = kwargs.pop("request")
-        nutritionist = Nutritionist.objects.filter(organization=request.user.organization)
-        super(AssignNutritionistForm, self).__init__(*args, *kwargs)
-        self.fields["nutritionist"].queryset = nutritionist
+        nutritionists = Nutritionist.objects.filter(organization=request.user.organization)
+        super(AssignNutritionistForm, self).__init__(*args, **kwargs)
+        self.fields["nutritionist"].queryset = nutritionists
+
 
 
 class LeadCategoryUpdateForm(forms.ModelForm):
