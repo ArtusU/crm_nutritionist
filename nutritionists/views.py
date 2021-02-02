@@ -13,7 +13,7 @@ class NutritionistListView(generic.ListView):
     template_name= "nutritionists/nutritionist_list.html"
     
     def get_queryset(self):
-        organization = self.request.user.userprofile
+        organization = self.request.user.organization
         return Nutritionist.objects.filter(organization=organization)
 
 
@@ -29,10 +29,10 @@ class NutritionistCreateView(generic.CreateView):
         user.is_nutritionist = True
         user.is_organiser = False
         user.set_password(f"{random.randint(0, 100000)}")
-        user.save()
+        user.save()  
         Nutritionist.objects.create(
             user=user,
-            organization=self.request.user.userprofile
+            organization=self.request.user.organization
         )
         send_mail(
             subject="You are invited to be a Nutritionist",
@@ -48,7 +48,7 @@ class NutritionistDetailView(generic.DetailView):
     context_object_name = "nutritionist"
 
     def get_queryset(self):
-        organization = self.request.user.userprofile
+        organization = self.request.user.organization
         return Nutritionist.objects.filter(organization=organization)
 
 
@@ -60,7 +60,8 @@ class NutritionistUpdateView(generic.UpdateView):
         return reverse("nutritionists:nutritionist-list")
 
     def get_queryset(self):
-        return Nutritionist.objects.all()
+        organization = self.request.user.organization
+        return Nutritionist.objects.filter(organization=organization)
 
 
 class NutritionistDeleteView(generic.DeleteView):
@@ -68,9 +69,11 @@ class NutritionistDeleteView(generic.DeleteView):
     context_object_name = "nutritionist"
 
     def get_queryset(self):
-        organization = self.request.user.userprofile
+        organization = self.request.user.organization
         return Nutritionist.objects.filter(organization=organization)
 
     def get_success_url(self):
         return reverse("nutritionists:nutritionist-list")
+
+    
 

@@ -17,7 +17,7 @@ class LeadModelForm(forms.ModelForm):
             'nutritionist',
             'description',
             'phone_number',
-            'email'
+            'email',
         )
 
 

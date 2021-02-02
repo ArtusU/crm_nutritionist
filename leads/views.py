@@ -29,7 +29,7 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
             queryset = Lead.objects.filter(nutritionist__organization=user.nutritionist.organization,  nutritionist__isnull=False)
         else:
             queryset = Lead.objects.filter(nutritionist=user.nutritionist, nutritionist__isnull=False)
-            #queryset = queryset.filter(nutritionist__user=user)
+            queryset = queryset.filter(nutritionist__user=user)  #logged in nutritioninst
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -87,6 +87,20 @@ class LeadUpdateView(generic.UpdateView):
 
     def get_success_url(self):
         return reverse("leads:lead-list")
+    
+    def lead_update(request, pk):
+        lead = Lead.objects.get(id=pk)
+        form = LeadModelForm(instance=lead)
+        if request.method == "POST":
+            form = LeadModelForm(request.POST, instance=lead)
+            if form.is_valid():
+                form.save()
+                return redirect("/leads")
+        context = {
+            "form": form,
+            "lead": lead
+        }
+        return render(request, "leads/lead_update.html", context)
 
 class LeadDeleteView(LoginRequiredMixin, generic.DeleteView):
     template_name = "leads/lead_delete.html"
@@ -165,13 +179,9 @@ class CategoryDetailView(LoginRequiredMixin, generic.DetailView):
         user = self.request.user
         # initial queryset of leads for the entire organization
         if user.is_organiser:
-            queryset = Category.objects.filter(
-                organization=user.organization
-            )
+            queryset = Category.objects.filter(organization=user.organization)
         else:
-            queryset = Category.objects.filter(
-                organization=user.nutritionist.organization
-            )
+            queryset = Category.objects.filter(organization=user.nutritionist.organization)
         return queryset
 
 
