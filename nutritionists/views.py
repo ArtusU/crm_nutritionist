@@ -36,7 +36,7 @@ class NutritionistCreateView(generic.CreateView):
         )
         send_mail(
             subject="You are invited to be a Nutritionist",
-            message="You were added as a nutritionist on ECF Participants Service. Please go to the service and use your email to reset default password and set up new one. After that please log in with your username [user.username] and new password.",
+            message="You were added as a nutritionist on ECF Participants Service. Please go to the service and use your email to reset default password and set up new one.",
             from_email="admin@test.com",
             recipient_list=[user.email]
         )

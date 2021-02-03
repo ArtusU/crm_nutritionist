@@ -4,8 +4,14 @@ from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
 from nutritionists.mixins import OrganiserAndLoginRequiredMixin
-from .models import Lead, Category, Nutritionist
-from .forms import LeadModelForm, CustomUserCreationForm, AssignNutritionistForm, LeadCategoryUpdateForm
+from .models import Lead, Category
+from .forms import (
+    LeadModelForm, 
+    CustomUserCreationForm, 
+    AssignNutritionistForm, 
+    LeadCategoryUpdateForm, 
+    CategoryModelForm
+)
 
 
 
@@ -75,8 +81,6 @@ class LeadCreateView(generic.CreateView):
         )
         return super(LeadCreateView, self).form_valid(form)
 
-
-
 class LeadUpdateView(generic.UpdateView):
     template_name = "leads/lead_update.html"
     form_class = LeadModelForm
@@ -112,7 +116,6 @@ class LeadDeleteView(LoginRequiredMixin, generic.DeleteView):
         user = self.request.user
         return Lead.objects.filter(organization=user.organization)
 
-    
 
 
 class AssignNutritionistView(generic.FormView):
@@ -144,16 +147,12 @@ class CategoryListView(generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super(CategoryListView, self).get_context_data(**kwargs)
-        user = self.request.user
 
+        user = self.request.user
         if user.is_organiser:
-            queryset = Lead.objects.filter(
-                organization=user.organization
-            )
+            queryset = Lead.objects.filter(organization=user.organization)
         else:
-            queryset = Lead.objects.filter(
-                organization=user.nutritionist.organization
-            )
+            queryset = Lead.objects.filter(organization=user.nutritionist.organization)
 
         context.update({
             "unassigned_lead_count": queryset.filter(category__isnull=True).count()
@@ -164,15 +163,10 @@ class CategoryListView(generic.ListView):
         user = self.request.user
         # initial queryset of leads for the entire organization
         if user.is_organiser:
-            queryset = Category.objects.filter(
-                organization=user.organization
-            )
+            queryset = Category.objects.filter(organization=user.organization)
         else:
-            queryset = Category.objects.filter(
-                organization=user.nutritionist.organization
-            )
+            queryset = Category.objects.filter(organization=user.nutritionist.organization)
         return queryset
-
 
 class CategoryDetailView(LoginRequiredMixin, generic.DetailView):
     template_name = "leads/category_detail.html"
@@ -188,19 +182,65 @@ class CategoryDetailView(LoginRequiredMixin, generic.DetailView):
         return queryset
 
 
+class CategoryCreateView(generic.CreateView):
+    template_name = "leads/category_create.html"
+    form_class = CategoryModelForm
+
+    def get_success_url(self):
+        return reverse("leads:category-list")
+
+    def form_valid(self, form):
+        category = form.save(commit=False)
+        category.organization = self.request.user.organization
+        category.save()
+        return super(CategoryCreateView, self).form_valid(form)
+
+
+class CategoryUpdateView(generic.UpdateView):
+    template_name = "leads/category_update.html"
+    form_class = CategoryModelForm
+
+    def get_success_url(self):
+        return reverse("leads:category-list")
+
+    def get_queryset(self):
+        user = self.request.user
+        # initial queryset of leads for the entire organization
+        if user.is_organiser:
+            queryset = Category.objects.filter(organization=user.organization)
+        else:
+            queryset = Category.objects.filter(organization=user.nutritionist.organization)
+        return queryset
+
+
+class CategoryDeleteView(generic.DeleteView):
+    template_name = "leads/category_delete.html"
+
+    def get_success_url(self):
+        return reverse("leads:category-list")
+
+    def get_queryset(self):
+        user = self.request.user
+        # initial queryset of leads for the entire organization
+        if user.is_organiser:
+            queryset = Category.objects.filter(organization=user.organization)
+        else:
+            queryset = Category.objects.filter(organization=user.nutritionist.organization)
+        return queryset
+
+
+
 class LeadCategoryUpdateView(generic.UpdateView):
     template_name = "leads/lead_category_update.html"
     form_class = LeadCategoryUpdateForm
 
     def get_queryset(self):
         user = self.request.user
-        # initial queryset of leads for the entire organization
         if user.is_organiser:
-            queryset = Lead.objects.filter(nutritionist__organization=user.organization)
+            queryset = Lead.objects.filter(organization=user.organization)
         else:
-            queryset = Lead.objects.filter(nutritionist=user.nutritionist)
-            # filter for the agent that is logged in
-            #queryset = queryset.filter(nutritionist__user=user)
+            queryset = Lead.objects.filter(organization=user.nutritionist.organization)
+            queryset = queryset.filter(nutritionist__user=user)
         return queryset
 
     def get_success_url(self):
