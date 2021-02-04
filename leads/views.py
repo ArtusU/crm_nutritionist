@@ -25,7 +25,7 @@ class SignupView(generic.CreateView):
 class LandingPageView(generic.TemplateView):
     template_name = "landing.html"
 
-class LeadListView(LoginRequiredMixin, generic.ListView):
+class LeadListView(OrganiserAndLoginRequiredMixin, generic.ListView):
     template_name = "leads/lead_list.html"
     context_object_name = "leads"
 
@@ -49,7 +49,7 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
             })
         return context
 
-class LeadDetailView(LoginRequiredMixin, generic.DetailView):
+class LeadDetailView(OrganiserAndLoginRequiredMixin, generic.DetailView):
     template_name = "leads/lead_detail.html"
     context_object_name = "lead"
     
@@ -62,7 +62,7 @@ class LeadDetailView(LoginRequiredMixin, generic.DetailView):
             queryset = queryset.filter(nutritionist__user=user)  #logged in nutritioninst
         return queryset
 
-class LeadCreateView(generic.CreateView):
+class LeadCreateView(OrganiserAndLoginRequiredMixin, generic.CreateView):
     template_name = "leads/lead_create.html"
     form_class = LeadModelForm
 
@@ -81,7 +81,7 @@ class LeadCreateView(generic.CreateView):
         )
         return super(LeadCreateView, self).form_valid(form)
 
-class LeadUpdateView(generic.UpdateView):
+class LeadUpdateView(OrganiserAndLoginRequiredMixin, generic.UpdateView):
     template_name = "leads/lead_update.html"
     form_class = LeadModelForm
 
@@ -106,7 +106,7 @@ class LeadUpdateView(generic.UpdateView):
         }
         return render(request, "leads/lead_update.html", context)
 
-class LeadDeleteView(LoginRequiredMixin, generic.DeleteView):
+class LeadDeleteView(OrganiserAndLoginRequiredMixin, generic.DeleteView):
     template_name = "leads/lead_delete.html"
 
     def get_success_url(self):
@@ -168,7 +168,7 @@ class CategoryListView(generic.ListView):
             queryset = Category.objects.filter(organization=user.nutritionist.organization)
         return queryset
 
-class CategoryDetailView(LoginRequiredMixin, generic.DetailView):
+class CategoryDetailView(OrganiserAndLoginRequiredMixin, generic.DetailView):
     template_name = "leads/category_detail.html"
     context_object_name = "category"
 
