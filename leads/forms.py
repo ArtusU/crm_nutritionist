@@ -4,7 +4,6 @@ from django.contrib.auth.forms import UserCreationForm, UsernameField
 from django.http import request
 from .models import Lead, Nutritionist, Category
 
-
 User = get_user_model()
 
 class LeadModelForm(forms.ModelForm):
@@ -20,19 +19,16 @@ class LeadModelForm(forms.ModelForm):
             'email',
         )
 
-
 class LeadForm(forms.Form):
     first_name = forms.CharField()
     last_name = forms.CharField()
     age = forms.IntegerField(min_value=16)
-
 
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ("username",)
         field_classes = {'username': UsernameField}
-
 
 class AssignNutritionistForm(forms.Form):
     nutritionist = forms.ModelChoiceField(queryset=Nutritionist.objects.none())
@@ -45,7 +41,6 @@ class AssignNutritionistForm(forms.Form):
         self.fields["nutritionist"].queryset = nutritionists
 
 
-
 class LeadCategoryUpdateForm(forms.ModelForm):
     class Meta:
         model = Lead
@@ -53,10 +48,12 @@ class LeadCategoryUpdateForm(forms.ModelForm):
             'category',
         )
 
-
 class CategoryModelForm(forms.ModelForm):
     class Meta:
         model = Category
         fields = (
             'name',
         )
+
+
+        

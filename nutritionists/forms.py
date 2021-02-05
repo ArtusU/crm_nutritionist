@@ -15,3 +15,6 @@ class NutritionistModelForm(forms.ModelForm):
             'last_name',
             'email'
         )
+
+
+        

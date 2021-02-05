@@ -13,8 +13,6 @@ from .forms import (
     CategoryModelForm
 )
 
-
-
 class SignupView(generic.CreateView):
     template_name = "registration/signup.html"
     form_class = CustomUserCreationForm

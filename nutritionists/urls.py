@@ -16,3 +16,5 @@ urlpatterns = [
     path('<int:pk>/delete/', NutritionistDeleteView.as_view(), name='nutritionist-delete'),
     path('create/', NutritionistCreateView.as_view(), name='nutritionist-create')
 ]
+
+

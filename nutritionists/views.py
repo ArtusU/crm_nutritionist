@@ -1,5 +1,4 @@
 import random
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect, reverse
@@ -7,7 +6,6 @@ from django.views import generic
 from leads.models import Nutritionist
 from .forms import NutritionistModelForm
 from .mixins import OrganiserAndLoginRequiredMixin
-
 
 class NutritionistListView(OrganiserAndLoginRequiredMixin, generic.ListView):
     template_name= "nutritionists/nutritionist_list.html"
@@ -63,22 +61,6 @@ class NutritionistUpdateView(OrganiserAndLoginRequiredMixin, generic.UpdateView)
     def get_queryset(self):
         organization = self.request.user.organization
         return Nutritionist.objects.filter(organization=organization)
-
-'''
-    def nutritionist_update(request, pk):
-        nutritionist = Nutritionist.objects.get(id=pk)
-        form = NutritionistModelForm(instance=nutritionist)
-        if request.method == "POST":
-            form = NutritionistModelForm(request.POST, instance=nutritionist)
-            if form.is_valid():
-                form.save()
-                return redirect("/nutritionist")
-        context = {
-            "form": form,
-            "nutritionist": nutritionist
-        }
-        return render(request, "nutritionists/nutritionist_update.html", context)
-'''
 
 class NutritionistDeleteView(OrganiserAndLoginRequiredMixin, generic.DeleteView):
     template_name = "nutritionists/nutritionist_delete.html"
