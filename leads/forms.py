@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UsernameField
 from django.http import request
-from .models import Lead, Nutritionist
+from .models import Lead, Nutritionist, Category
 
 
 User = get_user_model()
@@ -17,7 +17,7 @@ class LeadModelForm(forms.ModelForm):
             'nutritionist',
             'description',
             'phone_number',
-            'email'
+            'email',
         )
 
 
@@ -37,11 +37,13 @@ class CustomUserCreationForm(UserCreationForm):
 class AssignNutritionistForm(forms.Form):
     nutritionist = forms.ModelChoiceField(queryset=Nutritionist.objects.none())
 
+
     def __init__(self, *args, **kwargs):
         request = kwargs.pop("request")
-        nutritionist = Nutritionist.objects.filter(organisation=request.user.userprofile)
-        super(AssignNutritionistForm, self).__init__(*args, *kwargs)
-        self.fields["nutritionist"].queryset = nutritionist
+        nutritionists = Nutritionist.objects.filter(organization=request.user.organization)
+        super(AssignNutritionistForm, self).__init__(*args, **kwargs)
+        self.fields["nutritionist"].queryset = nutritionists
+
 
 
 class LeadCategoryUpdateForm(forms.ModelForm):
@@ -49,4 +51,12 @@ class LeadCategoryUpdateForm(forms.ModelForm):
         model = Lead
         fields = (
             'category',
+        )
+
+
+class CategoryModelForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = (
+            'name',
         )

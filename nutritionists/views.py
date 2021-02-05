@@ -2,22 +2,22 @@ import random
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
-from django.shortcuts import render, reverse
+from django.shortcuts import render, redirect, reverse
 from django.views import generic
 from leads.models import Nutritionist
 from .forms import NutritionistModelForm
 from .mixins import OrganiserAndLoginRequiredMixin
 
 
-class NutritionistListView(generic.ListView):
+class NutritionistListView(OrganiserAndLoginRequiredMixin, generic.ListView):
     template_name= "nutritionists/nutritionist_list.html"
     
     def get_queryset(self):
-        organization = self.request.user.userprofile
+        organization = self.request.user.organization
         return Nutritionist.objects.filter(organization=organization)
 
 
-class NutritionistCreateView(generic.CreateView):
+class NutritionistCreateView(OrganiserAndLoginRequiredMixin, generic.CreateView):
     template_name = "nutritionists/nutritionist_create.html"
     form_class = NutritionistModelForm
 
@@ -26,33 +26,34 @@ class NutritionistCreateView(generic.CreateView):
 
     def form_valid(self, form):
         user = form.save(commit=False) 
-        user.is_nutritionist = True
         user.is_organiser = False
+        user.is_nutritionist = True
         user.set_password(f"{random.randint(0, 100000)}")
-        user.save()
+        user.save()  
         Nutritionist.objects.create(
             user=user,
-            organization=self.request.user.userprofile
+            organization=self.request.user.organization
         )
         send_mail(
             subject="You are invited to be a Nutritionist",
-            message="You were added as a nutritionist on ECF Participants. Please login to start working.",
+            message="You were added as a nutritionist on ECF Participants Service. Please go to the service and use your email to reset default password and set up new one.",
             from_email="admin@test.com",
             recipient_list=[user.email]
         )
         return super(NutritionistCreateView, self).form_valid(form)
 
+
     
-class NutritionistDetailView(generic.DetailView):
+class NutritionistDetailView(OrganiserAndLoginRequiredMixin, generic.DetailView):
     template_name = "nutritionists/nutritionist_detail.html"
     context_object_name = "nutritionist"
 
     def get_queryset(self):
-        organization = self.request.user.userprofile
+        organization = self.request.user.organization
         return Nutritionist.objects.filter(organization=organization)
 
 
-class NutritionistUpdateView(generic.UpdateView):
+class NutritionistUpdateView(OrganiserAndLoginRequiredMixin, generic.UpdateView):
     template_name = "nutritionists/nutritionist_update.html"
     form_class = NutritionistModelForm
     
@@ -60,17 +61,35 @@ class NutritionistUpdateView(generic.UpdateView):
         return reverse("nutritionists:nutritionist-list")
 
     def get_queryset(self):
-        return Nutritionist.objects.all()
+        organization = self.request.user.organization
+        return Nutritionist.objects.filter(organization=organization)
 
+'''
+    def nutritionist_update(request, pk):
+        nutritionist = Nutritionist.objects.get(id=pk)
+        form = NutritionistModelForm(instance=nutritionist)
+        if request.method == "POST":
+            form = NutritionistModelForm(request.POST, instance=nutritionist)
+            if form.is_valid():
+                form.save()
+                return redirect("/nutritionist")
+        context = {
+            "form": form,
+            "nutritionist": nutritionist
+        }
+        return render(request, "nutritionists/nutritionist_update.html", context)
+'''
 
-class NutritionistDeleteView(generic.DeleteView):
+class NutritionistDeleteView(OrganiserAndLoginRequiredMixin, generic.DeleteView):
     template_name = "nutritionists/nutritionist_delete.html"
     context_object_name = "nutritionist"
 
     def get_queryset(self):
-        organization = self.request.user.userprofile
+        organization = self.request.user.organization
         return Nutritionist.objects.filter(organization=organization)
 
     def get_success_url(self):
         return reverse("nutritionists:nutritionist-list")
+
+    
 

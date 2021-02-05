@@ -10,8 +10,8 @@ class NutritionistModelForm(forms.ModelForm):
     class Meta:
         model = User
         fields = (
-            'email',
             'username',
             'first_name',
-            'last_name'
+            'last_name',
+            'email'
         )
