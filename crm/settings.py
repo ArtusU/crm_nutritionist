@@ -26,7 +26,6 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
@@ -156,3 +155,4 @@ if not DEBUG:
     X_FRAME_OPTIONS = "DENY"
 
     ALLOWED_HOSTS = ["*"]
+
