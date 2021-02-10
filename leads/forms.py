@@ -1,4 +1,5 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UsernameField
 from django.http import request
@@ -18,6 +19,20 @@ class LeadModelForm(forms.ModelForm):
             'phone_number',
             'email',
         )
+
+    def clean_email(self):
+        data = self.cleaned_data['email']
+        # if data != "*@*.*":
+        #     raise ValidationError('Your email must consist @ sign.')
+        return data
+    
+    def clean(self):
+        pass
+        # first_name = self.cleaned_data['first_name']
+        # last_name = self.cleaned_data['last_name']
+        # if first_name + last_name != "Mimi Vegas":
+        #     raise ValidationError("You name is not Mimi Vegas")
+
 
 class LeadForm(forms.Form):
     first_name = forms.CharField()
