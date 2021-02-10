@@ -41,6 +41,7 @@ class Lead(models.Model):
     organization    = models.ForeignKey("Organization", on_delete=models.CASCADE)
     nutritionist    = models.ForeignKey("Nutritionist", null=True, blank=True, on_delete=models.SET_NULL)
     category        = models.ForeignKey("Category", related_name="leads", blank=True, null=True, on_delete=models.SET_NULL)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True, )
 
     objects = LeadManager()
 
