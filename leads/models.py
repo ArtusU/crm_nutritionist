@@ -41,7 +41,7 @@ class Lead(models.Model):
     organization    = models.ForeignKey("Organization", on_delete=models.CASCADE)
     nutritionist    = models.ForeignKey("Nutritionist", null=True, blank=True, on_delete=models.SET_NULL)
     category        = models.ForeignKey("Category", related_name="leads", blank=True, null=True, on_delete=models.SET_NULL)
-    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True, )
+    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
 
     objects = LeadManager()
 
@@ -52,6 +52,20 @@ class Lead(models.Model):
     
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
+
+def handle_upload_follow_up(instance, filename):
+    return f"lead_followups/lead_{instance.lead.pk}/{filename}"
+
+class FollowUp(models.Model):                        #lead.followups.all
+    leads           = models.ForeignKey(Lead, related_name='followups', on_delete=models.CASCADE)
+    date_added      = models.DateTimeField(auto_now_add=True)
+    notes           = models.TextField(blank=True, null=True)
+    file            = models.FileField(null=True, blank=True, upload_to="handle_upload_follow_up")
+
+    def __str__(self):
+        return f"{self.lead.first_name} {self.lead.last_name}"
+
 
 class Category(models.Model):
     name            = models.CharField(max_length=30)
