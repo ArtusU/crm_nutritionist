@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Lead, Nutritionist, Organization, Category
+from .models import FollowUp, User, Lead, Nutritionist, Organization, Category
 
 
 class LeadAdmin(admin.ModelAdmin):
@@ -19,6 +19,7 @@ admin.site.register(User)
 admin.site.register(Lead, LeadAdmin)
 admin.site.register(Nutritionist)
 admin.site.register(Organization)
+admin.site.register(FollowUp)
 
 
 
