@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UsernameField
 from django.http import request
-from .models import Lead, Nutritionist, Category
+from .models import Lead, Nutritionist, Category, FollowUp
 
 User = get_user_model()
 
@@ -69,6 +69,15 @@ class CategoryModelForm(forms.ModelForm):
         model = Category
         fields = (
             'name',
+        )
+
+
+class FollowUpModelForm(forms.ModelForm):
+    class Meta:
+        model = FollowUp
+        fields = (
+            'notes',
+            'file'
         )
 
 
