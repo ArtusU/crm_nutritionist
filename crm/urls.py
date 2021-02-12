@@ -1,15 +1,23 @@
 from crm.settings import STATIC_ROOT, STATIC_URL
 from django.conf import settings
 from django.conf.urls.static import static
-from leads.views import LandingPageView, SignupView
+from leads.views import LandingPageView, SignupView, DashboardView
 from django.contrib import admin
-from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
+from django.contrib.auth.views import (
+    LoginView, 
+    LogoutView, 
+    PasswordResetView, 
+    PasswordResetDoneView, 
+    PasswordResetConfirmView, 
+    PasswordResetCompleteView
+)
 from django.urls import path, include
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', LandingPageView.as_view(), name='landing-page'),
+    path('dashboard', DashboardView.as_view(), name='dashboard'),
     path('leads/', include('leads.urls', namespace='leads')),
     path('nutritionists/', include('nutritionists.urls', namespace='nutritionists')),
 
