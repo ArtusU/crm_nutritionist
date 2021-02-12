@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
 from nutritionists.mixins import OrganiserAndLoginRequiredMixin
-from .models import Lead, Category
+from .models import Lead, Category, FollowUp
 from .forms import (
     LeadModelForm, 
     CustomUserCreationForm, 
@@ -249,6 +249,7 @@ class LeadCategoryUpdateView(generic.UpdateView):
 
 
 class FollowUpCreateView(LoginRequiredMixin, generic.CreateView):
+
     template_name = "leads/followup_create.html"
     form_class = FollowUpModelForm
 
@@ -263,8 +264,45 @@ class FollowUpCreateView(LoginRequiredMixin, generic.CreateView):
         return context
 
     def form_valid(self, form):
+
         lead = Lead.objects.get(pk=self.kwargs["pk"])
         followup = form.save(commit=False)
         followup.lead = lead
         followup.save()
         return super(FollowUpCreateView, self).form_valid(form)
+
+
+class FollowUpUpdateView(LoginRequiredMixin, generic.UpdateView):
+    template_name = "leads/followup_update.html"
+    form_class = FollowUpModelForm
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_organiser:
+            queryset = FollowUp.objects.filter(lead__organization=user.organization)
+        else:
+            queryset = FollowUp.objects.filter(lead__organization=user.nutritionist.organization)
+            queryset = queryset.filter(lead__nutritionist__user=user)
+        return queryset
+
+    def get_success_url(self):
+        return reverse("leads:lead-detail", kwargs={"pk": self.get_object().lead.id})
+
+
+class FollowUpDeleteView(LoginRequiredMixin, generic.DeleteView):
+    template_name = "leads/followup_delete.html"
+
+    def get_success_url(self):
+        followup = FollowUp.objects.get(id=self.kwargs["pk"])
+        return reverse("leads:lead-detail", kwargs={"pk":followup.lead.pk})
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_organiser:
+            queryset = FollowUp.objects.filter(lead__organization=user.organization)
+        else:
+            queryset = FollowUp.objects.filter(lead__organization=user.nutritionist.organization)
+            queryset = queryset.filter(lead__nutritionist__user=user)
+        return queryset
+
+
