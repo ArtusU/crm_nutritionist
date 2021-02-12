@@ -42,6 +42,7 @@ class Lead(models.Model):
     nutritionist    = models.ForeignKey("Nutritionist", null=True, blank=True, on_delete=models.SET_NULL)
     category        = models.ForeignKey("Category", related_name="leads", blank=True, null=True, on_delete=models.SET_NULL)
     profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
+    converted_date  = models.DateTimeField(blank=True, null=True)
 
     objects = LeadManager()
 

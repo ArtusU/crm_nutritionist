@@ -1,3 +1,4 @@
+import datetime
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.db.models import query
@@ -24,6 +25,42 @@ class SignupView(generic.CreateView):
 
 class LandingPageView(generic.TemplateView):
     template_name = "landing.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect("dashboard")
+        return super().dispatch(request, *args, **kwargs)
+
+class DashboardView(OrganiserAndLoginRequiredMixin, generic.TemplateView):
+    template_name = "dashboard.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(DashboardView, self).get_context_data(**kwargs)
+        user = self.request.user
+
+        total_lead_count = Lead.objects.filter(organization=user.organization).count()
+
+        thirty_days_ago = datetime.date.today() - datetime.timedelta(days=30)
+        total_in_past30 = Lead.objects.filter(
+            organization=user.organization, 
+            date_added__gte=thirty_days_ago
+            ).count()
+
+        converted_category = Category.objects.get(name="Converted")
+        converted_in_past30 = Lead.objects.filter(
+            organization=user.organization,
+            category=converted_category,
+            converted_date__gte=thirty_days_ago
+            ).count()
+
+
+        context.update({
+            "total_lead_count": total_lead_count,
+            "total_in_past30": total_in_past30,
+            "converted_in_past30": converted_in_past30
+        })
+        return context
+
 
 class LeadListView(OrganiserAndLoginRequiredMixin, generic.ListView):
     template_name = "leads/lead_list.html"
@@ -246,6 +283,15 @@ class LeadCategoryUpdateView(generic.UpdateView):
 
     def get_success_url(self):
         return reverse("leads:lead-detail", kwargs={"pk": self.get_object().id})
+
+    def form_valid(self, form):
+        instance = form.save(commit=False)
+        converted_category = Category.objects.get(name="Converted")
+        if form.cleaned_data["category"] == converted_category:
+            if self.get_object().category != converted_category:
+                instance.converted_date = datetime.datetime.now()
+        instance.save()
+        return super(LeadCategoryUpdateView, self).form_valid(form)
 
 
 class FollowUpCreateView(LoginRequiredMixin, generic.CreateView):
