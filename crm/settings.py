@@ -38,7 +38,8 @@ INSTALLED_APPS = [
 
     'leads',
     'nutritionists',
-
+    
+    'storages',
     'crispy_forms',
     'crispy_tailwind',
 ]
@@ -112,30 +113,42 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 AUTH_USER_MODEL = 'leads.User'
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static'
-]
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = 'media_root'
-STATIC_ROOT = 'static_root'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+if not DEBUG:
+    AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
 
-#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    AWS_DEFAULT_ACL = None
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+
+    STATIC_LOCATION = 'static'
+    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/${STATIC_LOCATION}/'
+    STATICFILES_STORAGE = 'crm.storage_backends.StaticStorage'
+
+    PUBLIC_MEDIA_LOCATION = 'media'
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/${PUBLIC_MEDIA_LOCATION}/'
+    DEFAULT_FILE_STORAGE = 'crm.storage_backends.MediaStorage'
+
+STATICFILES_DIRS = [BASE_DIR / 'static']
+
+if DEBUG:
+    STATIC_URL = '/static/'
+    STATICFILES_DIRS = [BASE_DIR / 'static']
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = 'media_root'
+    STATIC_ROOT = 'static_root'
+
 
 LOGIN_REDIRECT_URL = "/leads"
 LOGIN_URL = "/login"
@@ -157,7 +170,7 @@ if not DEBUG:
     SECURE_HSTS_PRELOAD = True
     X_FRAME_OPTIONS = "DENY"
 
-    ALLOWED_HOSTS = ["*"]
+    ALLOWED_HOSTS = ["*", 'crm-nutritionist-llvcv.ondigitalocean.app', 'https://crm-nutritionist-llvcv.ondigitalocean.app']
 
 #EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
