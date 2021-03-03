@@ -141,13 +141,13 @@ if not DEBUG:
     DEFAULT_FILE_STORAGE = 'crm.storage_backends.MediaStorage'
 
 STATICFILES_DIRS = [BASE_DIR / 'static']
+MEDIA_ROOT = 'media_root'
+STATIC_ROOT = 'static_root'
 
 if DEBUG:
     STATIC_URL = '/static/'
-    STATICFILES_DIRS = [BASE_DIR / 'static']
     MEDIA_URL = '/media/'
-    MEDIA_ROOT = 'media_root'
-    STATIC_ROOT = 'static_root'
+    
 
 
 LOGIN_REDIRECT_URL = "/leads"
