@@ -132,7 +132,7 @@ MEDIA_ROOT = 'media_root'
 STATIC_ROOT = 'static_root'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-
+'''
 #AWS_S3_HOST="s3.ca-central-1.amazonaws.com"
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
@@ -151,7 +151,7 @@ PUBLIC_MEDIA_LOCATION = 'media'
 MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/${PUBLIC_MEDIA_LOCATION}/'
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 #DEFAULT_FILE_STORAGE = 'crm.storage_backends.MediaStorage'
-
+'''
 
 LOGIN_REDIRECT_URL = "/leads"
 LOGIN_URL = "/login"
