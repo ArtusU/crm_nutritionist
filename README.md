@@ -1,4 +1,4 @@
-# [CRM Nutritionist](https://crm-nutritionist-llvcv.ondigitalocean.app/)
+# [CRM Nutritionist](https://my-nutritionist-myt88.ondigitalocean.app/)
 
 Python Django PaaS, designed for Health&Nutrition organizations as a CRM Platform 
 
