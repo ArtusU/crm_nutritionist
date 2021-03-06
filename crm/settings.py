@@ -1,5 +1,6 @@
 from pathlib import Path
 from decouple import config
+import os
 '''
 import environ
 
@@ -114,9 +115,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 LANGUAGE_CODE = 'en-us'
+
 TIME_ZONE = 'UTC'
+
 USE_I18N = True
+
 USE_L10N = True
+
 USE_TZ = True
 
 AUTH_USER_MODEL = 'leads.User'
@@ -127,8 +132,8 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = 'media_root'
+#MEDIA_URL = '/media/'
+#MEDIA_ROOT = 'media_root'
 STATIC_ROOT = 'static_root'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
