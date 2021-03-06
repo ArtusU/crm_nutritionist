@@ -178,7 +178,7 @@ if not DEBUG:
     SECURE_HSTS_PRELOAD = True
     X_FRAME_OPTIONS = "DENY"
 
-    ALLOWED_HOSTS = ["*", 'crm-nutritionist-llvcv.ondigitalocean.app', 'https://crm-nutritionist-llvcv.ondigitalocean.app']
+    ALLOWED_HOSTS = ["*"]
 
 #EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
