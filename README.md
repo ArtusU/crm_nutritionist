@@ -1,4 +1,4 @@
-# [CRM Nutritionist](https://my-nutritionist-myt88.ondigitalocean.app/)
+# [CRM Nutritionist]
 
 Python Django PaaS, designed for Health&Nutrition organizations as a CRM Platform 
 
@@ -29,4 +29,4 @@ Front-end: Tailwind
 ![image](https://drive.google.com/uc?export=view&id=1HrNt2d0g8umpKiBl8GjNXxxlNup2sCB_)
 
 
-Please visit: [CRM Nutritionist](https://crm-nutritionist-llvcv.ondigitalocean.app/)
+Please visit: [CRM Nutritionist]
