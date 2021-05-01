@@ -1,8 +1,7 @@
-# [CRM Nutritionist]
+# CRM Nutritionist
 
 Python Django PaaS, designed for Health&Nutrition organizations as a CRM Platform 
-
-Deployment: Digital Ocean, 
+ 
 DB: Postgresql
 Front-end: Tailwind
 
@@ -29,4 +28,3 @@ Front-end: Tailwind
 ![image](https://drive.google.com/uc?export=view&id=1HrNt2d0g8umpKiBl8GjNXxxlNup2sCB_)
 
 
-Please visit: [CRM Nutritionist]
